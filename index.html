@@ -1,0 +1,119 @@
+<html>
+  <head>
+    <title>Substring count</title>
+    <div>
+      <input type="text" placeholder="Insira a frase" id="inputFrase" />
+      <input
+        type="text"
+        placeholder="Caracter para contagem"
+        id="inputCaracter"
+      />
+      <button onclick="ProcessarSubstring()">Processar</button>
+      <table border="1" id="table">
+        <tr>
+          <th>Substring</th>
+          <th>Quantidade</th>
+        </tr>
+        <tr id="tr"></tr>
+      </table>
+    </div>
+
+    <body>
+      <script>
+        function ProcessarSubstring() {
+          var vFrase = String(document.getElementById("inputFrase").value);
+          var vCaracterContagem = String(
+            document.getElementById("inputCaracter").value
+          );
+
+          var vFrases = [];
+          var vFrasesCount = [];
+          var vStartOfSlice = 0;
+          var vResult = [];
+          var vResultString = "";
+
+          // Verifica se o primeiro caracter é o caracter utilizado para a contagem.
+          if (vFrase[0] == vCaracterContagem) {
+            vFrase = vFrase.replace(vCaracterContagem, "");
+            vFrasesCount.push(-1);
+          }
+
+          //Quebra a frase em substrings a cada caracter de contagem, além de indicar em quais
+          //substrings deve ocorrer a contagem de substrings.
+          for (var x = 0; x <= vFrase.length; x++) {
+            if (vFrase[x] == vCaracterContagem || x == vFrase.length) {
+              var vStringSlice = vFrase.slice(vStartOfSlice, x);
+              if (vStringSlice != "") {
+                vFrases.push(vFrase.slice(vStartOfSlice, x));
+                vStartOfSlice = x + 1;
+              }
+              if (vFrase[x] == vCaracterContagem) {
+                vFrasesCount.push(vFrases.length - 1);
+              }
+            }
+          }
+
+          vStartOfSlice = 0;
+          //Percorre cada substring que foi criada gerando as combinações possiveis.
+          for (x = 0; x < vFrases.length; x++) {
+            if (vFrasesCount.indexOf(-1) != -1) {
+              vFrasesCount.splice(0, 1);
+              RenderTable("", 0);
+            }
+            var vString = "";
+            //Ao encerrar uma substring, a substring que foi processada é unida a próxima para ser
+            //novamente gerado as substrings.
+            if (x > 0) {
+              for (var m = 0; m < x; m++) {
+                vString = vString + vFrases[m];
+              }
+            }
+            vString = vString + vFrases[x];
+
+            vStartOfSlice = 0;
+
+            //Gera as substrings
+            for (y = 0; y < vString.length; y++) {
+              for (z = 0; z <= vString.length; z++) {
+                var vStringSlice = vString.slice(vStartOfSlice, z);
+                if (vStringSlice != "" && vResult.indexOf(vStringSlice) == -1) {
+                  vResult.push(vStringSlice);
+                }
+              }
+              vStartOfSlice++;
+            }
+            //Exibe o resultado
+            console.log(vResult);
+
+            //Exibe a contagem caso necessário.
+            if (vFrasesCount.indexOf(x) != -1) {
+              RenderTable(vResult, vResult.length);
+            }
+
+            vResult.shift;
+          }
+        }
+        //Renderiza a tabela para exibir as informações no html
+        function RenderTable(prFrase, prQuantidade) {
+          var vTableElement = document.getElementById("table");
+
+          var vRowElement = document.createElement("tr");
+
+          var vColumnElement = document.createElement("td");
+          var vColumn2Element = document.createElement("td");
+          var cellText = document.createTextNode(prFrase);
+          var cell2Text = document.createTextNode(prQuantidade);
+
+          vColumnElement.appendChild(cellText);
+          vRowElement.appendChild(vColumnElement);
+
+          vColumn2Element.appendChild(cell2Text);
+          vRowElement.appendChild(vColumn2Element);
+
+          vRowElement.setAttribute("class", "tr");
+          vTableElement.appendChild(vRowElement);
+        }
+      </script>
+    </body>
+  </head>
+</html>
